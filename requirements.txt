@@ -1,0 +1,15 @@
+# SDN Dynamic Load Balancer Dependencies
+
+# RYU SDN Framework (using git version for Python 3.13+ compatibility)
+# Note: If installation fails, use Python 3.11 or earlier
+git+https://github.com/faucetsdn/ryu.git
+
+# System monitoring for dynamic load balancing
+psutil>=5.9.0
+
+# Flask Dashboard
+Flask>=3.0.0
+Flask-CORS>=4.0.0
+
+# Additional utilities
+eventlet>=0.33.0

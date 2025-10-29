@@ -1,0 +1,131 @@
+╔════════════════════════════════════════════════════════════════╗
+║       SDN DYNAMIC LOAD BALANCER - QUICK START GUIDE         ║
+╚════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════
+INSTALLATION (One Command)
+═══════════════════════════════════════════════════════════════════
+
+  ./install.sh
+
+Automatically detects OS and installs everything:
+  - Arch Linux: Uses Docker (Python 3.13 fix)
+  - Ubuntu: Native installation
+
+═════════════════════════════════════════════════════════════════════
+START SYSTEM (One Command)
+═══════════════════════════════════════════════════════════════════
+
+  ./start.sh
+
+Starts everything automatically:
+  ✓ RYU Controller (background)
+  ✓ Flask Dashboard (background) - http://localhost:5000
+  ✓ Mininet CLI (interactive)
+
+═══════════════════════════════════════════════════════════════════
+TEST LOAD BALANCING
+═══════════════════════════════════════════════════════════════════
+
+mininet> pingall                    # Test connectivity
+mininet> h1 ping -c 10 10.0.0.1     # Load balancer test
+mininet> h1 ping -c 20 10.0.0.1     # Extended test
+
+Expected output:
+  [LB] Client 10.0.0.1 -> Server 10.0.0.2 (Total: 1)
+  [LB] Client 10.0.0.1 -> Server 10.0.0.3 (Total: 2)
+  [LB] Client 10.0.0.1 -> Server 10.0.0.4 (Total: 3)
+
+═══════════════════════════════════════════════════════════════════
+STOP SYSTEM (One Command)
+═══════════════════════════════════════════════════════════════════
+
+  ./stop.sh
+
+OR simply type 'exit' in Mininet CLI (auto-cleanup)
+
+
+🔧 COMMON ISSUES & FIXES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Issue: "Cannot connect to controller"
+Fix:  Start controller FIRST, wait 5 seconds, then Mininet
+
+Issue: "No route to host"
+Fix:  $ sudo mn -c
+      Then restart both controller and Mininet
+
+Issue: "Command not found"
+Fix:  $ source venv/bin/activate
+
+Issue: Scripts not executable
+Fix:  $ chmod +x *.sh dashboard/*.sh
+
+
+📊 EXPECTED OUTPUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Controller logs should show:
+  [LB] Client 10.0.0.1 -> Server 10.0.0.2 (Total: 1)
+  [LB] Client 10.0.0.1 -> Server 10.0.0.3 (Total: 2)
+  [LB] Client 10.0.0.1 -> Server 10.0.0.4 (Total: 3)
+  [LB] Client 10.0.0.1 -> Server 10.0.0.2 (Total: 4)
+  
+This confirms round-robin is working! ✓
+
+
+⚙️ CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Change algorithm:     Edit load_balancer.py line 39
+Change logging:       Edit load_balancer.py line 19
+Change flow timeout:  Edit load_balancer.py line 88
+
+
+🐛 DEBUGGING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+View flows:          $ sudo ovs-ofctl dump-flows s1
+View switch config:  $ sudo ovs-vsctl show
+Capture packets:     $ sudo tcpdump -i s1-eth1 icmp
+
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Quick Start:     README.md
+Installation:    docs/SETUP.md
+Usage Guide:     docs/USAGE.md
+Architecture:    docs/ARCHITECTURE.md
+Troubleshoot:    docs/TROUBLESHOOTING.md
+
+
+🎯 PROJECT STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+install.sh               # Install everything
+start.sh                 # Start everything
+stop.sh                  # Stop everything
+load_balancer.py         # Main controller logic
+requirements.txt         # Dependencies
+dashboard/               # Web UI
+docs/                    # Documentation
+
+
+🌟 DEMO CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+□ Show controller logs (round-robin distribution)
+□ Show pingall results (connectivity)
+□ Show 20+ pings to virtual IP
+□ Show statistics output (every 10 seconds)
+□ Show flow table: sudo ovs-ofctl dump-flows s1
+□ Show dashboard (http://localhost:5000)
+□ Explain architecture diagram (README.md)
+
+
+📞 NEED HELP?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Check docs/TROUBLESHOOTING.md
+2. Enable debug: LOG_LEVEL = logging.DEBUG in load_balancer.py
+3. Check logs in Terminal 1
+4. Verify all components: ryu-manager --version, sudo mn --version
+
+
+═══════════════════════════════════════════════════════════════════
+Built with RYU Framework + Mininet + Python
+For educational purposes - SDN Load Balancing Demo
+═══════════════════════════════════════════════════════════════════
